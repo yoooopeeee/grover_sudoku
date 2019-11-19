@@ -40,23 +40,24 @@ def nums(template):
     num = []
     for k,index in zip(range(len(empty_indices)),empty_indices):
         row = template[index[0]][:]
-        column = template[:][index[1]]
+        column = np.array([template[k][index[1]] for k in range(rows)])
         #if the empty cell belongs to the upper left box
-        if index[0] <= 2 and index[1] <= 2:
+        if index[0] <= 1 and index[1] <= 1:
             box = np.array([template[i[0]][i[1]] for i in [[0,0],[0,1],[1,0],[1,1]]])
         #if the empty cell belongs to the upper right box
-        elif index[0] <= 2 and index[1] > 2:
+        elif index[0] <= 1 and index[1] > 1:
             box = np.array([template[i[0]][i[1]] for i in [[0,2],[0,3],[1,2],[1,3]]])
         #if the empty cell belongs to the lower left box
-        elif index[0] > 2 and index[1] <= 2:
+        elif index[0] > 1 and index[1] <= 1:
             box = np.array([template[i[0]][i[1]] for i in [[2,0],[2,1],[3,0],[3,1]]])
         #if the empty cell belongs to the lower right box
-        elif index[0] > 2 and index[1] > 2:
+        elif index[0] > 1 and index[1] > 1:
             box =  np.array([template[i[0]][i[1]] for i in [[2,2],[2,3],[3,2],[3,3]]])
         num.append(np.array([row, column, box]).reshape(1, 12)[0])
     return empty_indices, np.array(num)
 
 print(nums(template))
+
 
 #Input: sudoku matrix,
 #Output: list of elements in the same row, column and box of the empty cell in question.
@@ -68,7 +69,7 @@ def candidates(template, nums):
     cands = np.array([all_cands[k] for k in cand_indices])
     return cands
 
-print(candidates(template, np.array([4, 0, 0, 4, 4, 1])))
+print(candidates(template, [0, 4, 0, 2, 2, 0, 4, 0, 1, 0, 0, 4]))
 
 def single_cand_operation(qc, q0, q1, cands):
     if cands[0] == 1:
