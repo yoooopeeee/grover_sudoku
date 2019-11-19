@@ -113,8 +113,8 @@ def create_initial(qc, q, template):
     cands = np.array([candidates(template, num[k]) for k in range(len(num))])
     for j,k in zip(range(0, len(empty_indices)*2, 2),range(len(cands))):
         if len(cands[k]) == 1:
-            single_cand_operation(qc, q[k], q[k+1], cands[k])
+            single_cand_operation(qc, q[j], q[j+1], cands[k])
         else:
-            two_cand_operation(qc, q[k], q[k+1], cands[k])
+            two_cand_operation(qc, q[j], q[j+1], cands[k])
 
 print(create_initial(qc, qr, template))
