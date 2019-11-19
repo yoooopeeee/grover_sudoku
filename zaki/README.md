@@ -1,0 +1,1 @@
+simple_oracle に circuit, quantum register を入れて diffusion するとできる(かも…)
