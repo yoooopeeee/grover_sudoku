@@ -1,4 +1,3 @@
-# In[]:
 from qiskit import IBMQ, QuantumCircuit, ClassicalRegister, QuantumRegister, execute
 import numpy as np
 import matplotlib.pyplot as plt
@@ -118,4 +117,4 @@ def create_initial(qc, q, template):
         else:
             two_cand_operation(qc, q[k], q[k+1], cands[k])
 
-print(create_initial(qc, qr, template))    
+print(create_initial(qc, qr, template))
