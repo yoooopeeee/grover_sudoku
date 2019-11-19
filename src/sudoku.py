@@ -13,21 +13,42 @@ qr = QuantumRegister(30)
 cr = ClassicalRegister(30)
 qc = QuantumCircuit(qr,cr)
 
-#visualizes sudoku matrix. Element 0 means empty cell.
-def draw_matrix(template):
-    empty = np.ones((len(template), len(template)), dtype = np.int32)
-    plt.figure()
-    plt.axis('off')
-    plt.imshow(empty,interpolation='nearest',vmin=1,vmax=4, cmap = "gray_r")
-    ys, xs = np.meshgrid(range(template.shape[0]),range(template.shape[1]),indexing='ij')
-    for (x,y,val) in zip(xs.flatten(), ys.flatten(), template.flatten()):
-        if val == 0:
-            plt.text(x,y,None, horizontalalignment='center',verticalalignment='center',)
+#draws sudoku template
+#0 represents an empty cell
+#negative value represents an incorrect answer
+def draw_matrix(template, template_answer_filled, wrong_indices):
+    #compute size of sudoku matrix
+    rows = template.shape[0]
+    columns = template.shape[1]
+    #create vector from sudoku matrix
+    flat = template.reshape(1, rows**2)[0]
+    #based on the indices of the vector, create a list of empty cell indices
+    empty_indices = np.array([np.array([k//4,k%4]) for k in range(rows*columns) if flat[k] == 0])
+    #create empty sudoku matrix plot
+    fig, ax = plt.subplots(facecolor="w", figsize = (5, 5), dpi = 200)
+    #change tick location to match the lines of sudoku matrices
+    fig.gca().xaxis.set_major_locator(tick.MultipleLocator(1))
+    fig.gca().yaxis.set_major_locator(tick.MultipleLocator(1))
+    ax.grid(which='major',color='black',linestyle='-')
+    #eliminate ticks
+    ax.tick_params(direction = "in", length = 0, colors = "black")
+    plt.xlim(0,4)
+    plt.ylim(0,4)
+    #eliminate ticks
+    plt.tick_params(labelbottom=False,
+                labelleft=False,
+                labelright=False,
+                labeltop=False)
+    #fill in the corresponding numbers
+    for index in [[0,0],[0,1],[0,2],[0,3],[1,0],[1,1],[1,2],[1,3],[2,0],[2,1],[2,2],[2,3],[3,0],[3,1],[3,2],[3,3]]:
+        if template_answer_filled[index[0]][index[1]] == 0:
+            pass
+        elif index in wrong_indices:
+            ax.text(index[1] + 0.5, 3 - index[0]+0.5, str(template_answer_filled[index[0]][index[1]]), {'color': 'red', 'fontsize': 24, 'ha': 'center', 'va': 'center'})
         else:
-            plt.text(x,y,'{0:.0f}'.format(val), horizontalalignment='center',verticalalignment='center',)
+            ax.text(index[1] + 0.5, 3 - index[0]+0.5, str(template[index[0]][index[1]]), {'color': 'black', 'fontsize': 24, 'ha': 'center', 'va': 'center'})
     plt.show()
-
-draw_matrix(template)
+draw_matrix(template, template, [])
 
 #Input: sudoku matrix, output: list of qubit numbers assigned to each empty cell and
 #the list of numbers in the same row, column and qubicle of each empty cell
@@ -109,7 +130,7 @@ def two_cand_operation(qc, q0, q1, cands):
         qc.x(q0)
 
 def create_initial(qc, q, template):
-    draw_matrix(template)
+    draw_matrix(template, template, [])
     empty_indices, num = nums(template)
     cands = np.array([candidates(template, num[k]) for k in range(len(num))])
     for j,k in zip(range(0, len(empty_indices)*2, 2),range(len(cands))):
