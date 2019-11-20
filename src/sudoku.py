@@ -1,6 +1,8 @@
 from qiskit import IBMQ, QuantumCircuit, ClassicalRegister, QuantumRegister, execute
 import numpy as np
 import matplotlib.pyplot as plt
+import math
+import matplotlib.ticker as tick
 
 template = np.array([4, 0, 2, 0, 0, 1, 0, 4, 1, 0, 4, 0, 0, 4, 0, 2]).reshape(4, 4)
 print(template)
@@ -127,6 +129,28 @@ def two_cand_operation(qc, q0, q1, cands):
     #3 + 4
     else:
         qc.h(q1)
+        qc.x(q0)
+
+def three_cand_operation(qc, q0, q1, cands):
+    product = cands[0]*cands[1]
+    theta = 2*math.acos(1/math.sqrt(3))
+    #1 + 2 + 3
+    if product == 6:
+        qc.ry(theta, q0)
+        qc.ch(q0, q1)
+        qc.x(q0)
+    #1 + 2 + 4
+    elif product == 8:
+        qc.ry(theta, q0)
+        qc.ch(q0, q1)
+    #1 + 3 + 4
+    elif product == 12:
+        qc.ry(theta, q1)
+        qc.ch(q1, q0)
+    #2 + 3 + 4
+    else:
+        qc.ry(theta, q0)
+        qc.ch(q0, q1)
         qc.x(q0)
 
 def create_initial(qc, q, template):
